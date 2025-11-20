@@ -85,31 +85,46 @@
       background: #047857;
     }
 
-    /* Order panel */
+    /* Order modal overlay */
 
     #order-panel {
-      background: #020617;
-      border-bottom: 1px solid #1f2937;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.9);
       display: none;
+      z-index: 40;
+      align-items: center;
+      justify-content: center;
     }
 
     #order-panel.open {
-      display: block;
+      display: flex;
     }
 
     .order-inner {
+      background: #020617;
+      border-radius: 0.75rem;
+      border: 1px solid #1f2937;
       max-width: 960px;
-      margin: 0 auto;
-      padding: 0.75rem 0.8rem 0.9rem;
+      width: 100%;
+      max-height: 80vh;
       box-sizing: border-box;
+      padding: 0.75rem 0.8rem 0.9rem;
+      overflow-y: auto;
     }
 
     .order-header-row {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       justify-content: space-between;
       gap: 0.75rem;
       margin-bottom: 0.5rem;
+    }
+
+    .order-header-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
     }
 
     .order-header-row h2 {
@@ -122,7 +137,22 @@
     .order-empty {
       font-size: 0.82rem;
       color: #6b7280;
-      margin: 0.3rem 0 0.1rem;
+      margin: 0.1rem 0 0.1rem;
+    }
+
+    .order-close-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: #111827;
+      color: #e5e7eb;
+      padding: 0.25rem 0.7rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .order-close-btn:hover {
+      background: #1f2937;
     }
 
     #order-items {
@@ -346,6 +376,13 @@
       .order-toggle-btn {
         align-self: flex-end;
       }
+      #order-panel.open {
+        align-items: flex-end;
+      }
+      .order-inner {
+        max-height: 70vh;
+        border-radius: 0.75rem 0.75rem 0 0;
+      }
     }
   </style>
 </head>
@@ -369,12 +406,15 @@
     </div>
   </header>
 
-  <!-- Selected items panel -->
+  <!-- Selected items modal -->
   <section id="order-panel" aria-label="Selected items">
-    <div class="order-inner">
+    <div class="order-inner" role="dialog" aria-modal="true">
       <div class="order-header-row">
-        <h2 id="order-title-label">Selected items</h2>
-        <p id="order-empty-label" class="order-empty">No items selected yet.</p>
+        <div class="order-header-text">
+          <h2 id="order-title-label">Selected items</h2>
+          <p id="order-empty-label" class="order-empty">No items selected yet.</p>
+        </div>
+        <button type="button" id="close-order-btn" class="order-close-btn">✕</button>
       </div>
       <div id="order-items"></div>
       <div class="order-footer">
@@ -1250,9 +1290,8 @@
       } else {
         selectedItems[item.id].quantity += 1;
       }
+      // Just update UI, do NOT open modal automatically
       updateOrderUI();
-      const panel = document.getElementById("order-panel");
-      panel.classList.add("open");
     }
 
     function updateOrderUI() {
@@ -1434,11 +1473,26 @@
 
       const orderPanel = document.getElementById("order-panel");
       const viewBtn = document.getElementById("view-order-btn");
+      const closeBtn = document.getElementById("close-order-btn");
 
+      // Open modal manually with button
       viewBtn.addEventListener("click", () => {
-        orderPanel.classList.toggle("open");
+        orderPanel.classList.add("open");
       });
 
+      // Close modal with X
+      closeBtn.addEventListener("click", () => {
+        orderPanel.classList.remove("open");
+      });
+
+      // Close when clicking dark overlay
+      orderPanel.addEventListener("click", (e) => {
+        if (e.target === orderPanel) {
+          orderPanel.classList.remove("open");
+        }
+      });
+
+      // Remove item from order
       document.getElementById("order-items").addEventListener("click", (e) => {
         const btn = e.target.closest("[data-remove-id]");
         if (!btn) return;
