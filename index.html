@@ -29,7 +29,7 @@
       justify-content: space-between;
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 20;
       border-bottom: 1px solid #1f2937;
     }
 
@@ -37,6 +37,12 @@
       margin: 0;
       font-size: 1.3rem;
       letter-spacing: 0.08em;
+    }
+
+    header .right-block {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     header .language-badge {
@@ -47,7 +53,7 @@
     header .lang-switch-small {
       display: flex;
       gap: 0.35rem;
-      margin-left: 0.75rem;
+      margin-left: 0.4rem;
     }
 
     header .lang-switch-small button {
@@ -62,6 +68,130 @@
 
     header .lang-switch-small button:hover {
       background: #111827;
+    }
+
+    .order-toggle-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(52, 211, 153, 0.7);
+      background: #064e3b;
+      color: #bbf7d0;
+      padding: 0.35rem 0.7rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .order-toggle-btn:hover {
+      background: #047857;
+    }
+
+    /* Order panel */
+
+    #order-panel {
+      background: #020617;
+      border-bottom: 1px solid #1f2937;
+      display: none;
+    }
+
+    #order-panel.open {
+      display: block;
+    }
+
+    .order-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0.75rem 0.8rem 0.9rem;
+      box-sizing: border-box;
+    }
+
+    .order-header-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .order-header-row h2 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #f9fafb;
+    }
+
+    .order-empty {
+      font-size: 0.82rem;
+      color: #6b7280;
+      margin: 0.3rem 0 0.1rem;
+    }
+
+    #order-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-top: 0.35rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .order-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      padding: 0.45rem 0.55rem;
+      border-radius: 0.5rem;
+      background: #020617;
+      border: 1px solid #1f2937;
+      font-size: 0.85rem;
+    }
+
+    .order-item-main {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      min-width: 0;
+    }
+
+    .order-item-name {
+      color: #e5e7eb;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .order-item-price {
+      color: #9ca3af;
+      font-size: 0.8rem;
+    }
+
+    .order-item-remove {
+      border-radius: 999px;
+      border: 1px solid rgba(248, 113, 113, 0.8);
+      background: #7f1d1d;
+      color: #fee2e2;
+      padding: 0.25rem 0.55rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .order-item-remove:hover {
+      background: #b91c1c;
+    }
+
+    .order-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      color: #e5e7eb;
+      margin-top: 0.25rem;
+    }
+
+    .order-total-label {
+      opacity: 0.8;
     }
 
     main {
@@ -165,11 +295,34 @@
       color: #9ca3af;
     }
 
-    .item-price {
+    /* bottom row (price + button) */
+    .item-bottom-row {
       margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .item-price {
       font-weight: 600;
       font-size: 0.95rem;
       color: #e5e7eb;
+    }
+
+    .add-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(52, 211, 153, 0.8);
+      background: #064e3b;
+      color: #bbf7d0;
+      padding: 0.3rem 0.7rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .add-btn:hover {
+      background: #047857;
     }
 
     footer {
@@ -190,6 +343,9 @@
       header h1 {
         font-size: 1.15rem;
       }
+      .order-toggle-btn {
+        align-self: flex-end;
+      }
     }
   </style>
 </head>
@@ -198,7 +354,10 @@
     <div>
       <h1 id="restaurant-name">DANTE</h1>
     </div>
-    <div style="display:flex; align-items:center;">
+    <div class="right-block">
+      <button type="button" id="view-order-btn" class="order-toggle-btn">
+        Selected (0)
+      </button>
       <div class="language-badge">
         <span id="current-language-label">English</span>
       </div>
@@ -209,6 +368,21 @@
       </div>
     </div>
   </header>
+
+  <!-- Selected items panel -->
+  <section id="order-panel" aria-label="Selected items">
+    <div class="order-inner">
+      <div class="order-header-row">
+        <h2 id="order-title-label">Selected items</h2>
+        <p id="order-empty-label" class="order-empty">No items selected yet.</p>
+      </div>
+      <div id="order-items"></div>
+      <div class="order-footer">
+        <span class="order-total-label" id="order-total-label">Total:</span>
+        <span id="order-total">0 MKD</span>
+      </div>
+    </div>
+  </section>
 
   <main>
     <section id="menu-container">
@@ -228,6 +402,29 @@
         sq: "DANTE",
         mk: "DANTE"
       },
+      uiTexts: {
+        en: {
+          add: "Add to order",
+          orderTitle: "Selected items",
+          empty: "No items selected yet.",
+          total: "Total:",
+          selectedButton: "Selected"
+        },
+        sq: {
+          add: "Shto në porosi",
+          orderTitle: "Produkte të zgjedhura",
+          empty: "Nuk keni përzgjedhur asnjë produkt.",
+          total: "Totali:",
+          selectedButton: "Të zgjedhura"
+        },
+        mk: {
+          add: "Додај во нарачка",
+          orderTitle: "Избрани артикли",
+          empty: "Немате избрано артикли.",
+          total: "Вкупно:",
+          selectedButton: "Избрани"
+        }
+      },
       languages: [
         { code: "sq", label: "Shqip" },
         { code: "mk", label: "Македонски" },
@@ -246,7 +443,7 @@
             {
               id: "tomato-soup",
               price: 150,
-              image: "https://source.unsplash.com/400x400/?tomato-soup",
+              image: "https://images.pexels.com/photos/539451/pexels-photo-539451.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Tomato soup",
@@ -265,7 +462,7 @@
             {
               id: "chicken-soup",
               price: 170,
-              image: "https://source.unsplash.com/400x400/?chicken-soup",
+              image: "https://images.pexels.com/photos/539451/pexels-photo-539451.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Chicken soup",
@@ -284,7 +481,7 @@
             {
               id: "bruschetta",
               price: 180,
-              image: "https://source.unsplash.com/400x400/?bruschetta",
+              image: "https://images.pexels.com/photos/13814644/pexels-photo-13814644.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Bruschetta with tomatoes",
@@ -314,7 +511,7 @@
             {
               id: "shopska",
               price: 220,
-              image: "https://source.unsplash.com/400x400/?salad,vegetable",
+              image: "https://images.pexels.com/photos/19295808/pexels-photo-19295808.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Shopska salad",
@@ -333,7 +530,7 @@
             {
               id: "greek-salad",
               price: 240,
-              image: "https://source.unsplash.com/400x400/?greek-salad",
+              image: "https://images.pexels.com/photos/19295808/pexels-photo-19295808.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Greek salad",
@@ -352,7 +549,7 @@
             {
               id: "caesar-chicken",
               price: 280,
-              image: "https://source.unsplash.com/400x400/?caesar-salad,chicken",
+              image: "https://images.pexels.com/photos/19295808/pexels-photo-19295808.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Chicken Caesar salad",
@@ -382,7 +579,7 @@
             {
               id: "grilled-chicken-fillet",
               price: 420,
-              image: "https://source.unsplash.com/400x400/?grilled-chicken,fillet",
+              image: "https://images.pexels.com/photos/14457206/pexels-photo-14457206.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Grilled chicken fillet",
@@ -401,7 +598,7 @@
             {
               id: "pork-neck",
               price: 430,
-              image: "https://source.unsplash.com/400x400/?grilled-pork,steak",
+              image: "https://images.pexels.com/photos/14457206/pexels-photo-14457206.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Grilled pork neck",
@@ -420,7 +617,7 @@
             {
               id: "beef-steak",
               price: 750,
-              image: "https://source.unsplash.com/400x400/?beef-steak",
+              image: "https://images.pexels.com/photos/14457206/pexels-photo-14457206.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Beef steak 200 g",
@@ -439,7 +636,7 @@
             {
               id: "mixed-grill",
               price: 720,
-              image: "https://source.unsplash.com/400x400/?mixed-grill,bbq",
+              image: "https://images.pexels.com/photos/14457206/pexels-photo-14457206.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Mixed grill plate",
@@ -458,7 +655,7 @@
             {
               id: "grilled-trout",
               price: 520,
-              image: "https://source.unsplash.com/400x400/?grilled-trout,fish",
+              image: "https://images.pexels.com/photos/14457206/pexels-photo-14457206.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Grilled trout",
@@ -488,7 +685,7 @@
             {
               id: "spaghetti-bolognese",
               price: 360,
-              image: "https://source.unsplash.com/400x400/?spaghetti,bolognese",
+              image: "https://images.pexels.com/photos/13814644/pexels-photo-13814644.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Spaghetti Bolognese",
@@ -507,7 +704,7 @@
             {
               id: "penne-four-cheese",
               price: 380,
-              image: "https://source.unsplash.com/400x400/?penne,pasta,cheese",
+              image: "https://images.pexels.com/photos/13814644/pexels-photo-13814644.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Penne four cheese",
@@ -526,7 +723,7 @@
             {
               id: "pizza-margherita",
               price: 350,
-              image: "https://source.unsplash.com/400x400/?pizza,margherita",
+              image: "https://images.pexels.com/photos/13814644/pexels-photo-13814644.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Pizza Margherita",
@@ -545,7 +742,7 @@
             {
               id: "pizza-capricciosa",
               price: 420,
-              image: "https://source.unsplash.com/400x400/?pizza,capricciosa",
+              image: "https://images.pexels.com/photos/13814644/pexels-photo-13814644.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Pizza Capricciosa",
@@ -575,7 +772,7 @@
             {
               id: "classic-burger",
               price: 380,
-              image: "https://source.unsplash.com/400x400/?burger,fries",
+              image: "https://images.pexels.com/photos/2271107/pexels-photo-2271107.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Classic burger with fries",
@@ -594,7 +791,7 @@
             {
               id: "cheeseburger",
               price: 410,
-              image: "https://source.unsplash.com/400x400/?cheeseburger,fries",
+              image: "https://images.pexels.com/photos/2271107/pexels-photo-2271107.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Cheeseburger with fries",
@@ -613,7 +810,7 @@
             {
               id: "grilled-chicken-sandwich",
               price: 360,
-              image: "https://source.unsplash.com/400x400/?chicken-sandwich",
+              image: "https://images.pexels.com/photos/2271107/pexels-photo-2271107.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Grilled chicken sandwich",
@@ -643,7 +840,7 @@
             {
               id: "baklava",
               price: 160,
-              image: "https://source.unsplash.com/400x400/?baklava",
+              image: "https://images.pexels.com/photos/29538419/pexels-photo-29538419.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Baklava",
@@ -662,7 +859,7 @@
             {
               id: "chocolate-cake",
               price: 190,
-              image: "https://source.unsplash.com/400x400/?chocolate-cake,dessert",
+              image: "https://images.pexels.com/photos/29538419/pexels-photo-29538419.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Chocolate cake",
@@ -681,7 +878,7 @@
             {
               id: "panna-cotta",
               price: 190,
-              image: "https://source.unsplash.com/400x400/?panna-cotta,berries",
+              image: "https://images.pexels.com/photos/29538419/pexels-photo-29538419.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Panna cotta",
@@ -700,7 +897,7 @@
             {
               id: "ice-cream",
               price: 150,
-              image: "https://source.unsplash.com/400x400/?ice-cream,scoops",
+              image: "https://images.pexels.com/photos/29538419/pexels-photo-29538419.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Ice cream 3 scoops",
@@ -730,7 +927,7 @@
             {
               id: "espresso",
               price: 90,
-              image: "https://source.unsplash.com/400x400/?espresso,coffee",
+              image: "https://images.pexels.com/photos/27052947/pexels-photo-27052947.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Espresso",
@@ -749,7 +946,7 @@
             {
               id: "double-espresso",
               price: 120,
-              image: "https://source.unsplash.com/400x400/?double-espresso,coffee",
+              image: "https://images.pexels.com/photos/27052947/pexels-photo-27052947.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Double espresso",
@@ -768,7 +965,7 @@
             {
               id: "cappuccino",
               price: 130,
-              image: "https://source.unsplash.com/400x400/?cappuccino,coffee",
+              image: "https://images.pexels.com/photos/27052947/pexels-photo-27052947.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Cappuccino",
@@ -787,7 +984,7 @@
             {
               id: "latte-macchiato",
               price: 150,
-              image: "https://source.unsplash.com/400x400/?latte,coffee",
+              image: "https://images.pexels.com/photos/27052947/pexels-photo-27052947.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Latte macchiato",
@@ -806,7 +1003,7 @@
             {
               id: "tea",
               price: 80,
-              image: "https://source.unsplash.com/400x400/?tea,hot-drink",
+              image: "https://images.pexels.com/photos/27052947/pexels-photo-27052947.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Tea",
@@ -836,7 +1033,7 @@
             {
               id: "still-water",
               price: 70,
-              image: "https://source.unsplash.com/400x400/?water,bottle",
+              image: "https://images.pexels.com/photos/4110406/pexels-photo-4110406.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Still water 0.33 l",
@@ -855,7 +1052,7 @@
             {
               id: "sparkling-water",
               price: 80,
-              image: "https://source.unsplash.com/400x400/?sparkling-water",
+              image: "https://images.pexels.com/photos/4110406/pexels-photo-4110406.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Sparkling water 0.33 l",
@@ -874,7 +1071,7 @@
             {
               id: "coca-cola",
               price: 90,
-              image: "https://source.unsplash.com/400x400/?coca-cola,soft-drink",
+              image: "https://images.pexels.com/photos/4110406/pexels-photo-4110406.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Coca-Cola 0.33 l",
@@ -893,7 +1090,7 @@
             {
               id: "fanta",
               price: 90,
-              image: "https://source.unsplash.com/400x400/?orange-soda,soft-drink",
+              image: "https://images.pexels.com/photos/4110406/pexels-photo-4110406.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Fanta 0.33 l",
@@ -912,7 +1109,7 @@
             {
               id: "fruit-juice",
               price: 100,
-              image: "https://source.unsplash.com/400x400/?fruit-juice,glass",
+              image: "https://images.pexels.com/photos/4110406/pexels-photo-4110406.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Fruit juice 0.2 l",
@@ -942,7 +1139,7 @@
             {
               id: "draft-beer",
               price: 150,
-              image: "https://source.unsplash.com/400x400/?draft-beer,glass",
+              image: "https://images.pexels.com/photos/4110406/pexels-photo-4110406.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Draft beer 0.5 l",
@@ -961,7 +1158,7 @@
             {
               id: "bottled-beer",
               price: 160,
-              image: "https://source.unsplash.com/400x400/?beer,bottle",
+              image: "https://images.pexels.com/photos/4110406/pexels-photo-4110406.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "Bottled beer 0.5 l",
@@ -980,7 +1177,7 @@
             {
               id: "rakija",
               price: 120,
-              image: "https://source.unsplash.com/400x400/?brandy,shot",
+              image: "https://images.pexels.com/photos/4110406/pexels-photo-4110406.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "House rakija 50 ml",
@@ -999,7 +1196,7 @@
             {
               id: "house-wine-glass",
               price: 140,
-              image: "https://source.unsplash.com/400x400/?red-wine,glass",
+              image: "https://images.pexels.com/photos/4110406/pexels-photo-4110406.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "House wine glass 0.15 l",
@@ -1018,7 +1215,7 @@
             {
               id: "house-wine-bottle",
               price: 600,
-              image: "https://source.unsplash.com/400x400/?wine,bottle",
+              image: "https://images.pexels.com/photos/4110406/pexels-photo-4110406.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
               labels: {
                 en: {
                   name: "House wine bottle 0.75 l",
@@ -1040,6 +1237,88 @@
     };
 
     let currentLanguage = "en";
+    const selectedItems = {}; // { id: { item, quantity } }
+
+    function getUIText(key) {
+      const langPack = menuConfig.uiTexts[currentLanguage] || menuConfig.uiTexts["en"];
+      return langPack[key] || menuConfig.uiTexts["en"][key] || "";
+    }
+
+    function addToOrder(item) {
+      if (!selectedItems[item.id]) {
+        selectedItems[item.id] = { item, quantity: 1 };
+      } else {
+        selectedItems[item.id].quantity += 1;
+      }
+      updateOrderUI();
+      const panel = document.getElementById("order-panel");
+      panel.classList.add("open");
+    }
+
+    function updateOrderUI() {
+      const itemsContainer = document.getElementById("order-items");
+      const totalLabel = document.getElementById("order-total-label");
+      const totalSpan = document.getElementById("order-total");
+      const emptyLabel = document.getElementById("order-empty-label");
+      const orderTitle = document.getElementById("order-title-label");
+      const viewBtn = document.getElementById("view-order-btn");
+
+      orderTitle.textContent = getUIText("orderTitle");
+      totalLabel.textContent = getUIText("total");
+      emptyLabel.textContent = getUIText("empty");
+
+      itemsContainer.innerHTML = "";
+
+      const entries = Object.values(selectedItems);
+      let totalItems = 0;
+      let totalPrice = 0;
+
+      entries.forEach(entry => {
+        const { item, quantity } = entry;
+        totalItems += quantity;
+        totalPrice += item.price * quantity;
+
+        const row = document.createElement("div");
+        row.className = "order-item-row";
+
+        const main = document.createElement("div");
+        main.className = "order-item-main";
+
+        const lbl = item.labels[currentLanguage] || item.labels["en"];
+
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "order-item-name";
+        nameSpan.textContent = lbl.name + (quantity > 1 ? ` × ${quantity}` : "");
+        main.appendChild(nameSpan);
+
+        const priceSpan = document.createElement("span");
+        priceSpan.className = "order-item-price";
+        priceSpan.textContent = item.price + " " + menuConfig.currency;
+        main.appendChild(priceSpan);
+
+        const removeBtn = document.createElement("button");
+        removeBtn.className = "order-item-remove";
+        removeBtn.type = "button";
+        removeBtn.textContent = "✕";
+        removeBtn.setAttribute("data-remove-id", item.id);
+
+        row.appendChild(main);
+        row.appendChild(removeBtn);
+        itemsContainer.appendChild(row);
+      });
+
+      if (totalItems === 0) {
+        emptyLabel.style.display = "block";
+      } else {
+        emptyLabel.style.display = "none";
+      }
+
+      totalSpan.textContent = totalPrice + " " + menuConfig.currency;
+
+      if (viewBtn) {
+        viewBtn.textContent = getUIText("selectedButton") + " (" + totalItems + ")";
+      }
+    }
 
     function buildMenu() {
       const lang = currentLanguage;
@@ -1103,10 +1382,22 @@
             info.appendChild(desc);
           }
 
+          const bottomRow = document.createElement("div");
+          bottomRow.className = "item-bottom-row";
+
           const price = document.createElement("div");
           price.className = "item-price";
           price.textContent = item.price + " " + menuConfig.currency;
-          info.appendChild(price);
+          bottomRow.appendChild(price);
+
+          const addBtn = document.createElement("button");
+          addBtn.type = "button";
+          addBtn.className = "add-btn";
+          addBtn.textContent = getUIText("add");
+          addBtn.addEventListener("click", () => addToOrder(item));
+          bottomRow.appendChild(addBtn);
+
+          info.appendChild(bottomRow);
 
           card.appendChild(info);
           itemsGrid.appendChild(card);
@@ -1115,6 +1406,9 @@
         details.appendChild(itemsGrid);
         container.appendChild(details);
       });
+
+      // After rebuilding menu (language change), refresh order texts
+      updateOrderUI();
     }
 
     function setLanguage(langCode) {
@@ -1136,6 +1430,21 @@
           const lang = btn.getAttribute("data-lang-select");
           setLanguage(lang);
         });
+      });
+
+      const orderPanel = document.getElementById("order-panel");
+      const viewBtn = document.getElementById("view-order-btn");
+
+      viewBtn.addEventListener("click", () => {
+        orderPanel.classList.toggle("open");
+      });
+
+      document.getElementById("order-items").addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-remove-id]");
+        if (!btn) return;
+        const id = btn.getAttribute("data-remove-id");
+        delete selectedItems[id];
+        updateOrderUI();
       });
 
       // Initial render in default language (English)
