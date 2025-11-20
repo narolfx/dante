@@ -45,31 +45,6 @@
       gap: 0.5rem;
     }
 
-    header .language-badge {
-      font-size: 0.9rem;
-      opacity: 0.9;
-    }
-
-    header .lang-switch-small {
-      display: flex;
-      gap: 0.35rem;
-      margin-left: 0.4rem;
-    }
-
-    header .lang-switch-small button {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      background: #020617;
-      color: #e5e7eb;
-      padding: 0.2rem 0.6rem;
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
-
-    header .lang-switch-small button:hover {
-      background: #111827;
-    }
-
     .order-toggle-btn {
       border-radius: 999px;
       border: 1px solid rgba(52, 211, 153, 0.7);
@@ -83,6 +58,31 @@
 
     .order-toggle-btn:hover {
       background: #047857;
+    }
+
+    .lang-switch-small {
+      display: flex;
+      gap: 0.35rem;
+    }
+
+    .lang-switch-small button {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: #020617;
+      color: #e5e7eb;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .lang-switch-small button:hover {
+      background: #111827;
+    }
+
+    .lang-switch-small button.active {
+      border-color: rgba(52, 211, 153, 0.9);
+      background: #047857;
+      color: #bbf7d0;
     }
 
     /* Order modal overlay */
@@ -373,6 +373,10 @@
       header h1 {
         font-size: 1.15rem;
       }
+      .right-block {
+        align-self: stretch;
+        justify-content: space-between;
+      }
       .order-toggle-btn {
         align-self: flex-end;
       }
@@ -395,9 +399,6 @@
       <button type="button" id="view-order-btn" class="order-toggle-btn">
         Selected (0)
       </button>
-      <div class="language-badge">
-        <span id="current-language-label">English</span>
-      </div>
       <div class="lang-switch-small">
         <button type="button" data-lang-select="sq">AL</button>
         <button type="button" data-lang-select="mk">MK</button>
@@ -1290,7 +1291,6 @@
       } else {
         selectedItems[item.id].quantity += 1;
       }
-      // Just update UI, do NOT open modal automatically
       updateOrderUI();
     }
 
@@ -1454,9 +1454,13 @@
       currentLanguage = langCode;
       document.documentElement.lang = langCode;
 
-      const langObj = menuConfig.languages.find(l => l.code === langCode);
-      document.getElementById("current-language-label").textContent =
-        langObj ? langObj.label : langCode.toUpperCase();
+      // highlight active button
+      document.querySelectorAll("[data-lang-select]").forEach(btn => {
+        btn.classList.toggle(
+          "active",
+          btn.getAttribute("data-lang-select") === langCode
+        );
+      });
 
       buildMenu();
     }
@@ -1501,8 +1505,8 @@
         updateOrderUI();
       });
 
-      // Initial render in default language (English)
-      buildMenu();
+      // Initial render in default language (English) and set active button
+      setLanguage("en");
     });
   </script>
 </body>
